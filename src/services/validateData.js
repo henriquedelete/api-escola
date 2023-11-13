@@ -22,7 +22,6 @@ module.exports = ({ username, email, password }) => {
       }
 
       if (regex.test(password)) {
-        console.log(validator.isEmpty(password));
         const salt = genSaltSync(8);
         const hashed = hashSync(password, salt);
         return hashed;
