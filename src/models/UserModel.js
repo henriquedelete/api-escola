@@ -1,14 +1,8 @@
 const prisma = require("../database/connect");
 
-class EmailExistsError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "EmailExistsError";
-  }
-}
-
 class UserModel {
   async createUser({ username, email, password }) {
+    console.log({ username, email, password });
     try {
       const register = await prisma.user.create({
         data: {
@@ -31,7 +25,4 @@ class UserModel {
   }
 }
 
-module.exports = {
-  UserModel,
-  EmailExistsError,
-};
+module.exports = new UserModel();

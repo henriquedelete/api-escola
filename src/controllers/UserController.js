@@ -1,5 +1,6 @@
 const validateData = require("../services/validateData");
-const { EmailExistsError, UserModel } = require("../models/UserModel.js");
+const UserModel = require("../models/UserModel.js");
+const { EmailExistsError } = require("../core/errors/UserModelErros.js");
 
 class UserController {
   index(req, res) {
@@ -9,19 +10,17 @@ class UserController {
   async store(req, res) {
     try {
       const { username, email, password } = req.body;
-      const register = await new UserModel().createUser({
+
+      const valide = validateData({
         username,
         email,
         password,
       });
+
+      const register = await UserModel.createUser(valide);
       res.status(201).json({ success: true, email: register });
     } catch (error) {
-      if (error instanceof EmailExistsError) {
-        res.status(400).json({ error: error.message });
-      } else {
-        console.error(error);
-        res.status(500).json({ error: "Erro ao criar usuário." });
-      }
+      res.status(400).json({ error: error.message });
     }
   }
 
