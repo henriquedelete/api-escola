@@ -2,7 +2,7 @@ const validator = require("validator");
 const { genSaltSync, hashSync } = require("bcrypt");
 const { ValidationInternalErrors } = require("../core/errors/UserModelErros");
 
-module.exports = ({ username, email, password }) => {
+function validateUserDataValues({ username, email, password }) {
   try {
     function validEmail() {
       if (validator.isEmail(email)) {
@@ -47,4 +47,6 @@ module.exports = ({ username, email, password }) => {
   } catch (err) {
     throw new ValidationInternalErrors(err.message);
   }
-};
+}
+
+module.exports = validateUserDataValues;

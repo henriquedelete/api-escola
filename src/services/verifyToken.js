@@ -12,11 +12,13 @@ const getSecret = () => {
   }
 };
 
-module.exports = (token) => {
+function verifyToken(token) {
   try {
-    return verify(token, getSecret(), { complete: true });
+    const verificado = verify(token, getSecret(), { complete: true });
+    return verificado.payload;
   } catch (err) {
     handlerErrors(err);
     return null;
   }
-};
+}
+module.exports = verifyToken;

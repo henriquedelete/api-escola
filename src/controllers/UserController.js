@@ -1,19 +1,31 @@
-const validateData = require("../services/validateData");
+const validateUserDataValues = require("../services/validateUserDataValues.js");
 const UserModel = require("../models/UserModel.js");
 const { default: isEmail } = require("validator/lib/isEmail.js");
 const userSignToken = require("../services/userSignToken.js");
+const disableRegisterUser = require("../services/disableRegisterUser.js");
+const handlerErrors = require("../core/errors/handlerErrors.js");
+const verifyToken = require("../services/verifyToken.js");
+const modifyUserFullData = require("../services/modifyUserFullData.js");
+const findOne = require("../services/findOne.js");
 
 class UserController {
-  findMe(req, res) {
-    console.log(req.headers.authorization);
-    return res.status(200).send(`Index`);
+  async findMe(req, res) {
+    try {
+      const token = req.headers.authorization;
+      const myProfile = verifyToken(token).id;
+      const response = await findOne(myProfile);
+      return res.status(200).json(response);
+    } catch (err) {
+      handlerErrors(err);
+      return res.status(404).json({ err: err.message });
+    }
   }
 
   async store(req, res) {
     try {
       const { username, email, password } = req.body;
 
-      const valide = validateData({
+      const valide = validateUserDataValues({
         username,
         email,
         password,
@@ -26,12 +38,38 @@ class UserController {
     }
   }
 
-  modify(req, res) {
-    return res.status(200).send(`modify`);
+  async modify(req, res) {
+    try {
+      const token = req.headers.authorization;
+
+      let { username, email, password } = req.body;
+      let modifyDataUser = modifyUserFullData(token, {
+        username,
+        email,
+        password,
+      });
+      return res.status(200).json({ modifyDataUser });
+    } catch (err) {
+      handlerErrors(err);
+      return res
+        .status(403)
+        .json({ err: `Erro ao modificar seus dados. vamos tentar novamente!` });
+    }
   }
 
-  delete(req, res) {
-    return res.status(200).send(`delete`);
+  async desable(req, res) {
+    try {
+      const token = req.headers.authorization;
+      const register = verifyToken(token);
+      if (!register.id) {
+        return res.status(401).json({ err: `Problemas no token!` });
+      }
+      let desableUser = await disableRegisterUser(register.id);
+      return res.status(200).json({ desableUser });
+    } catch (err) {
+      handlerErrors(err);
+      return res.status(403).json({ err: `Erro ao desabilitar sua conta` });
+    }
   }
 
   async entry(req, res) {
@@ -41,14 +79,17 @@ class UserController {
       if (!isEmail(email)) {
         throw new Error(`Email, invalido.`);
       }
-      if (password.length <= 5 && password.length >= 50) {
-        throw new Error(`Senha, invalido.`);
+      const regex = /^[a-zA-Z0-9]{5,50}$/;
+
+      if (!regex.test(password)) {
+        throw new Error(`Senha, precisa ter entre 5 a 50 caracteres!`);
       }
 
       let genToken = await userSignToken(email, password);
 
       return res.json({ genToken });
     } catch (err) {
+      console.log(err);
       return res
         .status(401)
         .json({ err: `Não encontrei seu Email, precisa se cadastrar!` });

@@ -2,7 +2,6 @@ const express = require("express");
 const userRoutes = require("../src/routes/userRoutes");
 const cors = require("cors");
 const optionsCors = require("./config/optionsCors");
-const verifyTokenUsers = require("./middlewares/verifyTokenUsers");
 
 class App {
   constructor() {

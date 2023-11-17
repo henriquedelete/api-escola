@@ -14,7 +14,7 @@ const getSecret = () => {
   return secret;
 };
 
-module.exports = (payload = { email: "", id: "" }) => {
+function signToken(payload = { email: "", id: "" }) {
   try {
     if (isEmail(payload.email) && payload.id) {
       return sign(payload, getSecret(), { expiresIn: "1h" });
@@ -29,4 +29,6 @@ module.exports = (payload = { email: "", id: "" }) => {
     handlerErrors(new Error(errorMessage));
     return "Ocorreu um erro, tente novamente mais tarde!";
   }
-};
+}
+
+module.exports = signToken;

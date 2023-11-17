@@ -1,9 +1,10 @@
 const { decode } = require("jsonwebtoken");
 
-module.exports = (token) => {
+function decodeToken(token) {
   try {
     return decode(token);
   } catch (e) {
     return null;
   }
-};
+}
+module.exports = decodeToken;

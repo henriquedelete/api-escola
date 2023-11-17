@@ -1,8 +1,8 @@
-const { compare, compareSync } = require("bcrypt");
+const { compareSync } = require("bcrypt");
 const prisma = require("../database/connect");
 const signToken = require("./signToken");
 
-module.exports = async (email, password) => {
+async function userSignToken(email, password) {
   const verifyUser = await prisma.user.findUnique({ where: { email } });
   const comparePasswords = compareSync(password, verifyUser.password);
   if (comparePasswords === true) {
@@ -12,4 +12,6 @@ module.exports = async (email, password) => {
       `A senha, ou o email está errados. tente novamente mais tarde.`
     );
   }
-};
+}
+
+module.exports = userSignToken;
