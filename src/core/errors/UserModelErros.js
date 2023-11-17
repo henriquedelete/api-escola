@@ -13,5 +13,6 @@ class ValidationInternalErrors extends Error {
 }
 
 module.exports = {
-    EmailExistsError, ValidationInternalErrors
-}
+  EmailExistsError,
+  ValidationInternalErrors,
+};

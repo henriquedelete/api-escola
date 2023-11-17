@@ -1,9 +1,11 @@
 const validateData = require("../services/validateData");
 const UserModel = require("../models/UserModel.js");
-const { EmailExistsError } = require("../core/errors/UserModelErros.js");
+const { default: isEmail } = require("validator/lib/isEmail.js");
+const userSignToken = require("../services/userSignToken.js");
 
 class UserController {
-  index(req, res) {
+  findMe(req, res) {
+    console.log(req.headers.authorization);
     return res.status(200).send(`Index`);
   }
 
@@ -32,8 +34,25 @@ class UserController {
     return res.status(200).send(`delete`);
   }
 
-  findAll(req, res) {
-    return res.status(200).send(`findAll`);
+  async entry(req, res) {
+    try {
+      const { email, password } = req.body;
+
+      if (!isEmail(email)) {
+        throw new Error(`Email, invalido.`);
+      }
+      if (password.length <= 5 && password.length >= 50) {
+        throw new Error(`Senha, invalido.`);
+      }
+
+      let genToken = await userSignToken(email, password);
+
+      return res.json({ genToken });
+    } catch (err) {
+      return res
+        .status(401)
+        .json({ err: `Não encontrei seu Email, precisa se cadastrar!` });
+    }
   }
 }
 
