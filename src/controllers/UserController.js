@@ -92,6 +92,10 @@ class UserController {
         .json({ err: `Não encontrei seu Email, precisa se cadastrar!` });
     }
   }
+
+  health(req, res) {
+    return res.status(200).send();
+  }
 }
 
 module.exports = new UserController();

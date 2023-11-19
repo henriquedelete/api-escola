@@ -13,4 +13,6 @@ r.post("/login", UserController.entry);
 r.put("/desable", UserController.desable);
 r.put("/modify", UserController.modify);
 
+r.put("/health", UserController.health);
+
 module.exports = r;
