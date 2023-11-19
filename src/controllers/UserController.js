@@ -1,19 +1,16 @@
 const validateUserDataValues = require("../services/validateUserDataValues.js");
-const UserModel = require("../models/UserModel.js");
+const UserModel = require("../models/UserModel/index.js");
 const { default: isEmail } = require("validator/lib/isEmail.js");
 const userSignToken = require("../services/userSignToken.js");
-const disableRegisterUser = require("../services/disableRegisterUser.js");
 const handlerErrors = require("../core/errors/handlerErrors.js");
 const verifyToken = require("../services/verifyToken.js");
-const modifyUserFullData = require("../services/modifyUserFullData.js");
-const findOne = require("../services/findOne.js");
 
 class UserController {
   async findMe(req, res) {
     try {
       const token = req.headers.authorization;
       const myProfile = verifyToken(token).id;
-      const response = await findOne(myProfile);
+      const response = await UserModel.findOne(myProfile);
       return res.status(200).json(response);
     } catch (err) {
       handlerErrors(err);
@@ -43,7 +40,7 @@ class UserController {
       const token = req.headers.authorization;
 
       let { username, email, password } = req.body;
-      let modifyDataUser = modifyUserFullData(token, {
+      let modifyDataUser = UserModel.updateUser(token, {
         username,
         email,
         password,
@@ -64,7 +61,7 @@ class UserController {
       if (!register.id) {
         return res.status(401).json({ err: `Problemas no token!` });
       }
-      let desableUser = await disableRegisterUser(register.id);
+      let desableUser = await UserModel.disableUser(register.id);
       return res.status(200).json({ desableUser });
     } catch (err) {
       handlerErrors(err);
