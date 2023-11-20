@@ -1,6 +1,6 @@
 const { portApp } = require("./serverOptions");
 
-const whitelist = [`http://localhost:${portApp}`]; // Adicione outras origens conforme necessário
+const whitelist = [`http://localhost:${portApp}`, `http://localhost:3000`]; // Adicione outras origens conforme necessário
 
 const corsOptions = {
   origin: function (origin, callback) {

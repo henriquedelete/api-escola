@@ -2,17 +2,25 @@ require("dotenv").config();
 const { verify } = require("jsonwebtoken");
 const handlerErrors = require("../core/errors/handlerErrors");
 
-const getSecret = process.env.STRING_JWT_SECRET;
+const secret = process.env.STRING_JWT_SECRET;
 
 module.exports = (req, res, next) => {
   try {
-    const verification = verify(req.headers.authorization.token, getSecret(), {
+    const token = req.headers["authtoken"];
+    if (!token) {
+      return res
+        .status(400)
+        .json({ err: "Erro ao processar a sua requisição..." });
+    }
+    const verification = verify(token, secret, {
       complete: true,
-      data: verification.payload,
     });
-    console.log(verification.payload);
 
-    req.headers.authorization = { auth: true, verification };
+    req.userData = {
+      id: verification.payload.id,
+      email: verification.payload.email,
+    };
+
     next();
   } catch (err) {
     handlerErrors(err);

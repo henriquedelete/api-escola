@@ -72,6 +72,7 @@ class UserController {
   async entry(req, res) {
     try {
       const { email, password } = req.body;
+      console.log(email, password);
 
       if (!isEmail(email)) {
         throw new Error(`Email, invalido.`);
@@ -82,9 +83,9 @@ class UserController {
         throw new Error(`Senha, precisa ter entre 5 a 50 caracteres!`);
       }
 
-      let genToken = await userSignToken(email, password);
+      let token = await userSignToken(email, password);
 
-      return res.json({ genToken });
+      return res.json(token);
     } catch (err) {
       console.log(err);
       return res
@@ -94,6 +95,7 @@ class UserController {
   }
 
   health(req, res) {
+    console.log(req.userData);
     return res.status(200).send();
   }
 }
